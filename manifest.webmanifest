@@ -1,0 +1,16 @@
+{
+  "name": "甜了么 · 我们的小窝",
+  "short_name": "甜了么",
+  "description": "毛毛和小赵的恋爱小窝 · 合影墙、许愿单、生理期、心情记、运动簿",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FDFBFA",
+  "theme_color": "#F4A9C4",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
