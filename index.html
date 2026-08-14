@@ -1649,7 +1649,7 @@ function viewMine(){
   </div>
   <div class="card">${cardCorner()}<h2>🔗 跨设备实时同步 <span class="h-deco">${ICON.pawSmall}</span></h2>
     <p class="muted">两台手机打开同一个网址、填相同「同步房间码」即实时互通。数据存在你自己的 Supabase 项目（托管 Postgres），房间码就是共享密钥，别人读不到你们的内容。</p>
-    <div id="syncStatus" class="sync-status off">未初始化</div>
+    <div id="syncStatus" class="sync-status ${SYNC.online?'on':'off'}">${SYNC.online?'🟢 已连接，两人实时同步中':'🔴 离线（数据存本机，联网后自动同步）'}</div>
     <label class="f">Supabase 地址</label><input id="sbUrl" value="${esc(SYNC.server||SUPABASE_URL||'')}" placeholder="https://xxxx.supabase.co">
     <label class="f">Supabase Anon Key</label><input id="sbAnon" value="${esc(localStorage.getItem('wb_sb_anon')||SUPABASE_ANON||'')}" placeholder="eyJ... 公开密钥（可安全放前端）">
     <label class="f">同步房间码（两人填一样的）</label><input id="syncRoom" value="${esc(SYNC.room||'')}" placeholder="建议用下方自动生成的随机码">
