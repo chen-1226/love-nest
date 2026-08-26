@@ -390,7 +390,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--btn1);border-style:so
 .anni-item .ad b{font-size:22px;font-weight:800;color:var(--btn1-d);line-height:1;white-space:nowrap}
 .anni-item .ad span{font-size:10px;color:var(--sub);white-space:nowrap}
 .anni-item .ab{flex:1;min-width:0}
-.anni-item .title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.anni-item .title-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.anni-item .title-main{display:inline-flex;align-items:center;gap:6px;min-width:0;flex:1;overflow:hidden}
+.anni-item .title-main .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.wi-checkin-wrap{position:relative;display:inline-block;vertical-align:top}
+.wi-checkin-wrap .wi-who{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.5);color:#fff;font-size:10px;padding:1px 6px;border-radius:999px}
+.wi-checkin{margin:4px 6px 0 0;border-radius:10px}
 .anni-item .title-row .ic{width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
 .anni-item .title-row .ic img,.anni-item .title-row .ic svg{width:18px;height:18px;object-fit:contain}
 .anni-item .t{flex:1 1 auto;min-width:0;margin:0;font-weight:700;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -507,7 +512,8 @@ body{background-image:radial-gradient(rgba(232,165,181,.07) 1px,transparent 1px)
 input,select,textarea{border-radius:var(--radius-md);transition:border-color .2s, box-shadow .2s, background .2s}
 input:focus,select:focus,textarea:focus{border-color:var(--btn1);border-style:solid;box-shadow:var(--ring);background:#fff}
 .seg button{transition:background .15s, border-color .15s, transform .12s}
-.seg button:hover{background:#fff;border-color:var(--btn1)}
+.seg button:not(.on):hover{background:#fff;border-color:var(--btn1)}
+.seg button.on:hover{background:var(--btn1);color:#fff}
 
 /* 按钮：悬浮微抬升 + 更顺滑 */
 .btn{transition:transform .14s ease, filter .16s ease, box-shadow .25s ease}
@@ -1186,7 +1192,7 @@ const todoIcon=`<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAw
 const whoTag=w=>w==='cat'?'<span class="td-tag cat">毛毛确认</span>':(w==='dog'?'<span class="td-tag dog">小赵确认</span>':'');
 const todoList=DATA.todos.slice().sort((a,b)=>(a.confirmedBy?1:-1)-(b.confirmedBy?1:-1)).map(t=>{
   const isDone=!!t.confirmedBy;
-  return `<div class="td-item ${isDone?'done':''}"><div class="td-check ${isDone?'checked':''}" data-act="toggleTodo" data-id="${t.id}">${isDone?ICON.check:''}</div><div class="td-main"><div class="td-text">${esc(t.text)}</div>${whoTag(t.confirmedBy)}</div><button class="iconbtn" data-act="delTodo" data-id="${t.id}" title="删除">${ICON.trash}</button></div>`;
+  return `<div class="td-item ${isDone?'done':''}"><div class="td-check ${isDone?'checked':''}" data-act="toggleTodo" data-id="${t.id}">${isDone?ICON.check:''}</div><div class="td-main"><div class="td-text">${esc(t.text)}</div>${whoTag(t.confirmedBy)}</div>${isDone?'':('<button class="iconbtn" data-act="editTodo" data-id="'+t.id+'" title="编辑">'+ICON.edit+'</button>')}<button class="iconbtn" data-act="delTodo" data-id="${t.id}" title="删除">${ICON.trash}</button></div>`;
 }).join('')||`<div class="empty" style="padding:20px 0">还没有待确认的事，添加一件吧～</div>`;
 const todoCard=`<div class="todo-card" style="--i:3.5"><div class="td-head"><div class="td-title">${todoIcon} 待确认事项</div><span class="td-count">${todoDone}/${todoTotal}</span></div><div class="td-list">${todoList}</div><div class="td-add"><input type="text" id="todoInput" placeholder="添加一件小事…" maxlength="50"><button class="btn" data-act="addTodo" title="添加">添加</button></div></div>`;
 const ev=getUpcomingEvents();
@@ -1206,7 +1212,7 @@ function viewAnniversary(){
     const lab=d===0?`<span class="tag today">就是今天 🎉</span>`:`<span class="tag warn">还有 ${d} 天</span>`;
     const icon=annIcon(a.title);
     return `<div class="anni-item"><div class="ad">${d===0?'<b>今</b>':`<b>${d}</b><span>天</span>`}</div>
-      <div class="ab"><div class="title-row"><span class="ic">${icon}</span><span class="t">${esc(a.title)}</span>${lab}</div><div class="s"><span style="white-space:nowrap">下次：<b>${esc(nd)}</b></span></div>${a.note?`<div class="s" style="opacity:.75;font-size:11px">${esc(a.note)}</div>`:''}</div>
+      <div class="ab"><div class="title-row"><span class="title-main"><span class="ic">${icon}</span><span class="t">${esc(a.title)}</span></span>${lab}</div><div class="s"><span style="white-space:nowrap">下次：<b>${esc(nd)}</b></span></div>${a.note?`<div class="s" style="opacity:.75;font-size:11px">${esc(a.note)}</div>`:''}</div>
       <div class="act"><button class="iconbtn" data-act="editAnn" data-id="${a.id}">${ICON.edit}</button>
       <button class="iconbtn" data-act="delAnn" data-id="${a.id}">${ICON.trash}</button></div></div>`;}).join('')||`<div class="empty">还没有纪念日，添加一个吧～</div>`;
   $("#view").innerHTML=`<div class="fade"><div class="card">${cardCorner()}<h2>${ICON.cal} 纪念日 & 倒计时 <span class="h-deco">${ICON.pawSmall}</span></h2>${list}
@@ -1220,7 +1226,7 @@ function viewGifts(){
   const toCat=gs.filter(g=>g.toWho==='cat').length;
   const toDog=gs.filter(g=>g.toWho==='dog').length;
   const list=gs.slice().reverse().map(g=>{
-    const thumb=g.photo?`<img class="g-thumb" src="${g.photo}" alt="礼物">`:`<div class="g-ic">${giftIcon(g.scene)}</div>`;
+    const thumb=g.photo?`<img class="g-thumb" src="${g.photo}" alt="礼物" onclick="zoomImg('${g.photo}')" style="cursor:zoom-in">`:`<div class="g-ic">${giftIcon(g.scene)}</div>`;
     return `<div class="gift-card">
       <div class="g-media">${thumb}</div>
       <div class="g-body">
@@ -1258,7 +1264,7 @@ function viewPhotos(){
     const places=[...new Set(arr.map(p=>p.place).filter(Boolean))];
     const tags=(scenes.map(s=>`<span class="tag" style="background:var(--bg-paper);color:var(--ink)">${esc(s)}</span>`).join(''))
       +(places.map(pl=>`<span class="tag" style="background:var(--bg-paper);color:var(--ink)">📍 ${esc(pl)}</span>`).join(''));
-    const cells=arr.map(p=>`<div class="moment-cell"><img src="${p.src}" alt="" title="${esc(p.scene||'')}">
+    const cells=arr.map(p=>`<div class="moment-cell"><img src="${p.src}" alt="" title="${esc(p.scene||'')}" onclick="zoomImg('${p.src}')" style="cursor:zoom-in">
       <div class="moment-cap">${esc(p.scene||'')}</div>
       <button class="del" data-act="delPhoto" data-id="${p.id}">${ICON.trash}</button></div>`).join('');
     const headRight=(upTag||tags)?`<div class="moment-tags">${upTag}${tags}</div>`:'';
@@ -1280,9 +1286,9 @@ function viewWishes(){
       <div class="wi-main">
         <div class="ic wi-ic" style="background:${done?'linear-gradient(135deg,#EAF3E0,#E2EDD6)':'linear-gradient(135deg,var(--bg-paper),#FFF8F6)'};border:1px solid ${done?'#D6E7C8':'rgba(232,165,181,.25)'}">${done?`<svg viewBox="0 0 24 24" fill="none" stroke="#5F7A50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-11"/></svg>`:ICON.star}</div>
         <div class="body" style="flex:1"><div class="t" style="${done?'text-decoration:line-through;opacity:.55':''}">${esc(w.title)} <span class="tag" style="color:${col};border-color:${col}55;background:${col}18">${esc(w.category||'其他')}</span> ${done?'<span class="tag ok">已完成</span>':(n>0?`<span class="tag info">${n}/2 已完成</span>`:'<span class="tag">待解锁</span>')}</div>
-          <div class="s">${esc(w.strategy||'')}${w.url?` · <a href="${esc(w.url)}" style="color:var(--ink);text-decoration:underline;text-underline-offset:2px">链接</a>`:''}${w.prep?` · 准备：${esc(w.prep)}`:''}${w.planDate?` · 计划：${esc(w.planDate)}`:''}</div>
+
           ${marks?`<div class="s wi-marks">${marks}</div>`:''}
-          ${w.checkin?`<img class="thumb wi-checkin" src="${w.checkin}" alt="打卡图">`:''}${w.feeling?`<div class="s wi-feel">${esc(w.feeling)}</div>`:''}</div>
+          ${(()=>{const cs=w.checkins||{};let A=Object.keys(cs).map(k=>({who:k,src:cs[k]}));if(!A.length&&w.checkin)A=[{who:'',src:w.checkin}];return A.map(p=>`<div class="wi-checkin-wrap"><img class="thumb wi-checkin" src="${p.src}" alt="打卡图" onclick="zoomImg('${p.src}')" style="cursor:zoom-in"><span class="wi-who">${p.who?whoName(p.who):''}</span></div>`).join('');})()}${w.feeling?`<div class="s wi-feel">${esc(w.feeling)}</div>`:''}</div>
         <div class="act wi-act"><button class="iconbtn" data-act="editWish" data-id="${w.id}" title="编辑">${ICON.edit}</button>
         <button class="iconbtn" data-act="toggleWish" data-id="${w.id}" title="打卡">${ICON.check}</button>
         <button class="iconbtn" data-act="delWish" data-id="${w.id}">${ICON.trash}</button></div>
@@ -1378,7 +1384,7 @@ function viewPeriod(){
   const historyBody=p.records.length?p.records.slice().reverse().map(r=>`<div class="row"><div class="date">${esc(r.start)} ${r.end?'~ '+esc(r.end):''}</div><div class="meta">${esc(r.feeling||'')} ${r.body?'· '+esc(r.body):''}</div></div>`).join(''):'<div class="muted" style="font-size:13px">暂无记录</div>';
   const historyHtml=`<details class="history-card"><summary><span>历史记录</span><span style="display:flex;align-items:center;gap:6px"><span class="count">${p.records.length} 条</span><span class="arrow">▼</span></span></summary><div class="history-body">${historyBody}</div></details>`;
   $("#view").innerHTML=`<div class="fade"><div class="card">${cardCorner()}<h2>${ICON.drop} 毛毛生理期记录 <span class="h-deco">${ICON.pawSmall}</span></h2>
-    <p class="muted">${whoName('dog')}也能看到，记得照顾她 🌸</p>
+    <p class="muted">${whoName('dog')} · 记得照顾她 🌸</p>
     <div class="pred-card"><div class="cap">预计下次生理期</div><div class="big">${esc(p.predictNext)||'—'}</div>${p.predictNext?`<div class="cd">${(()=>{const d=diffDays(p.predictNext,todayStr());return d===0?'预计今天 / 已到':d<0?`已过 <b>${-d}</b> 天 / 记得照顾她`:`距今天还有 <b>${d}</b> 天`;})()}</div>`:''}</div>
     ${phaseHtml}
     ${historyHtml}
@@ -1398,12 +1404,12 @@ function viewEmotion(){
     const recName=e.recorder?whoName(e.recorder):'我';
     if(e.type==='sweet'){return `<div class="item"><div class="ic" style="background:#fbeef0">${ICON.heart}</div>
       <div class="body"><div class="t">甜蜜瞬间 · ${esc(e.mood||'')}</div><div class="s">${esc(e.content)}</div><div class="s">${esc(e.date)}${rec?' · '+rec:''}</div></div>
-      <div class="act"><button class="iconbtn" data-act="delEmo" data-id="${e.id}">${ICON.trash}</button></div></div>`;}
+      <div class="act"><button class="iconbtn" data-act="editEmo" data-id="${e.id}" title="编辑">${ICON.edit}</button><button class="iconbtn" data-act="delEmo" data-id="${e.id}">${ICON.trash}</button></div></div>`;}
     const st=e.status==='ok'?'<span class="tag green">已和好</span>':e.status==='notok'?'<span class="tag red">未和好</span>':'<span class="tag">待处理</span>';
     return `<div class="item" style="display:block"><div style="display:flex;align-items:center;gap:10px">
         <div class="ic" style="background:#f5e4e1">${HUG_ICON}</div>
         <div class="body" style="flex:1"><div class="t">吵架复盘 ${st}</div><div class="s">${esc(e.trigger||'')} · ${esc(e.date)}${rec?' · '+rec:''}</div></div>
-        <button class="iconbtn" data-act="delEmo" data-id="${e.id}">${ICON.trash}</button></div>
+        <button class="iconbtn" data-act="editEmo" data-id="${e.id}" title="编辑">${ICON.edit}</button><button class="iconbtn" data-act="delEmo" data-id="${e.id}">${ICON.trash}</button></div>
       ${(()=>{const rs=e.reviews||{};return Object.keys(rs).filter(k=>rs[k]&&rs[k].trim()).map(k=>`<div style="background:#fbeef0;border-radius:var(--radius-sm);padding:10px;margin-top:8px;font-size:13px;white-space:pre-wrap"><b>${esc(whoName(k))}的复盘：</b>\n${esc(rs[k])}</div>`).join('');})()}
       <div class="row-btns">
         ${e.status!=='ok'?`<button class="btn mini green" data-act="reconcile" data-id="${e.id}" data-status="ok">标记和好</button>`:''}
@@ -1671,6 +1677,12 @@ function clrAvatar(who){DATA.meta[who].avatar=null;save();renderAll();}
 /* ---------- modal ---------- */
 function openModal(title,body){$("#sheet").innerHTML=`<span class="modal-tape"></span><button class="close" data-act="closeModal">×</button><h3>${title}</h3>${body}`;$("#overlay").classList.add('show');}
 function closeModal(){$("#overlay").classList.remove('show');}
+function zoomImg(src){let o=$('#zoomOverlay');if(!o){o=document.createElement('div');o.id='zoomOverlay';o.style.cssText='position:fixed;inset:0;background:rgba(40,30,30,.92);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';o.onclick=()=>o.style.display='none';document.body.appendChild(o);}o.innerHTML='<img src="'+src+'" style="max-width:100%;max-height:100%;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.5)">';o.style.display='flex';}
+function editTodo(id){const t=DATA.todos.find(x=>x.id===id);if(!t)return;openModal('编辑待确认事项',`<label class="f">内容</label><textarea id="t_text">${esc(t.text)}</textarea><div class="row-btns"><button class="btn full" onclick="submitEditTodo('${t.id}')">保存</button></div>`);}
+function submitEditTodo(id){const t=DATA.todos.find(x=>x.id===id);if(!t)return;const v=($('#t_text').value||'').trim();if(!v){toast('内容不能为空');return;}t.text=v;save();closeModal();renderView();}
+function editEmo(id){const e=DATA.emotions.find(x=>x.id===id);if(!e)return;window._editEmoId=id;if(e.type==='sweet'){openModal('编辑甜蜜瞬间',`<label class="f">当时心情</label><div class="seg" id="e_mood_seg">${['😊 开心','😘 感动','🤣 搞笑','😌 温馨'].map(m=>`<button data-v="${m.slice(2)}" class="${e.mood===m.slice(2)?'on':''}">${m}</button>`).join('')}</div><input type="hidden" id="e_mood" value="${esc(e.mood||'')}"><label class="f">发生了什么</label><textarea id="e_c">${esc(e.content||'')}</textarea><label class="f">日期</label><input type="date" id="e_d" value="${esc(e.date||todayStr())}"><div class="row-btns"><button class="btn full" onclick="submitEditEmo()">保存</button></div>`);bindSeg('#e_mood_seg','e_mood');}else{openModal('编辑吵架记录',`<label class="f">吵架时间</label><input type="date" id="e_d" value="${esc(e.date||todayStr())}"><label class="f">触发事件简述</label><textarea id="e_trigger">${esc(e.trigger||'')}</textarea><label class="f">毛毛反应</label><div class="seg" id="e_cat">${['🤫 沉默不说话','😠 直接爆发','😌 平静沟通'].map(m=>`<button data-v="${m.slice(2)}" class="${e.catEmotion===m.slice(2)?'on':''}">${m}</button>`).join('')}</div><label class="f">小赵反应</label><div class="seg" id="e_dog">${['🏃 回避矛盾','🛡️ 直面沟通'].map(m=>`<button data-v="${m.slice(2)}" class="${e.dogEmotion===m.slice(2)?'on':''}">${m}</button>`).join('')}</div><label class="f">我的感受</label><textarea id="e_my">${esc(e.myFeeling||'')}</textarea><input type="hidden" id="e_cat_v" value="${esc(e.catEmotion||'')}"><input type="hidden" id="e_dog_v" value="${esc(e.dogEmotion||'')}"><div class="row-btns"><button class="btn full" onclick="submitEditEmo()">保存</button></div>`);bindSeg('#e_cat','e_cat_v');bindSeg('#e_dog','e_dog_v');}}
+function submitEditEmo(){const id=window._editEmoId;const e=DATA.emotions.find(x=>x.id===id);if(!e)return;const miss=[];if(e.type==='sweet'){const mood=($('#e_mood')&&$('#e_mood').value)||'';const content=($('#e_c').value||'').trim();const date=$('#e_d').value||'';if(!mood)miss.push('当时心情');if(!content)miss.push('发生了什么');if(!date)miss.push('日期');if(miss.length){toast('请填写：'+miss.join('、'));return;}e.mood=mood;e.content=content;e.date=date;}else{const date=$('#e_d').value||'';const trigger=($('#e_trigger').value||'').trim();const catEmotion=($('#e_cat_v')&&$('#e_cat_v').value)||'';const dogEmotion=($('#e_dog_v')&&$('#e_dog_v').value)||'';const myFeeling=($('#e_my').value||'').trim();if(!date)miss.push('吵架时间');if(!trigger)miss.push('触发事件简述');if(!catEmotion)miss.push('毛毛反应');if(!dogEmotion)miss.push('小赵反应');if(!myFeeling)miss.push('我的感受');if(miss.length){toast('请填写：'+miss.join('、'));return;}e.date=date;e.trigger=trigger;e.catEmotion=catEmotion;e.dogEmotion=dogEmotion;e.myFeeling=myFeeling;}save();closeModal();window._editEmoId=null;renderView();}
+
 
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;
@@ -1695,12 +1707,12 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
     case 'addEmo':addEmo(type);break;
     case 'reconcile':{const e=DATA.emotions.find(x=>x.id===id);if(e){e.status=status;if(status==='ok'){e.reconcileTime=todayStr();}save();renderView();}break;}
     case 'manualEmo':manualEmo(id);break;
-    case 'delEmo':del('emotions',id,'记录');break;
+    case 'delEmo':del('emotions',id,'记录');break;case 'editEmo':editEmo(id);break;
     
     case 'addFit':addFit();break;case 'delFit':del('fitness',id,'运动');break;
     case 'addTodo':{const inp=$('#todoInput');if(!inp)return;const v=inp.value.trim();if(!v){toast('先写点什么吧');return;}DATA.todos.unshift({id:uid('t'),text:v,confirmedBy:null,createdAt:todayStr()});inp.value='';save();renderView();break;}
     case 'toggleTodo':{const t=DATA.todos.find(x=>x.id===id);if(t){t.confirmedBy=t.confirmedBy?null:(DATA.meta.me||'cat');save();renderView();}break;}
-    case 'delTodo':{DATA.todos=DATA.todos.filter(x=>x.id!==id);save();renderView();break;}
+    case 'delTodo':{DATA.todos=DATA.todos.filter(x=>x.id!==id);save();renderView();break;}case 'editTodo':editTodo(id);break;
     case 'saveMeta':{DATA.meta.startDate=$('#startDate').value;
       const cw=$('#catWeight'),dw=$('#dogWeight');
       if(cw)DATA.meta.cat.weight=Math.max(30,Math.min(150,+$('#catWeight').value||50));
@@ -1794,27 +1806,21 @@ function submitPhotos(){const wrap=$('#up_preview');if(!wrap)return;const imgs=A
 function addWish(){openModal('添加愿望',`
   <label class="f">愿望标题<span class="req">*</span></label><input id="w_title" placeholder="如：一起看极光">
   <label class="f">分类<span class="req">*</span></label><select id="w_cat"><option>旅行</option><option>美食</option><option>体验</option><option>居家</option><option>其他</option></select>
-  <label class="f">攻略（怎么做）</label><textarea id="w_str" placeholder="步骤"></textarea>
-  <label class="f">攻略链接</label><input id="w_url" placeholder="https://">
-  <label class="f">准备事项</label><input id="w_prep" placeholder="如：防晒/预算">
-  <label class="f">计划完成时间<span class="req">*</span></label><input type="date" id="w_plan">
+  <label class="f">心愿备注（可选）</label><textarea id="w_note" placeholder="想一起做的小期待"></textarea>
   <div class="row-btns"><button class="btn full" onclick="submitWish()">保存</button></div>`);}
-function submitWish(id){const title=($('#w_title').value||'').trim();const category=$('#w_cat').value||'';const planDate=$('#w_plan').value||'';const miss=[];if(!title)miss.push('愿望标题');if(!category)miss.push('分类');if(!planDate)miss.push('计划完成时间');if(miss.length){toast('请填写：'+miss.join('、'));return;}if(id){const w=DATA.wishes.find(x=>x.id===id);if(w){w.title=title;w.category=category;w.strategy=$('#w_str').value;w.url=$('#w_url').value;w.prep=$('#w_prep').value;w.planDate=planDate;}}else DATA.wishes.push({id:uid('w'),title,category,strategy:$('#w_str').value,url:$('#w_url').value,prep:$('#w_prep').value,planDate,status:'todo',doneBy:[],feeling:'',checkin:null,date:''});save();closeModal();renderView();}
+function submitWish(id){const title=($('#w_title').value||'').trim();const category=$('#w_cat').value||'';const note=($('#w_note')&&$('#w_note').value||'').trim();const miss=[];if(!title)miss.push('愿望标题');if(!category)miss.push('分类');if(miss.length){toast('请填写：'+miss.join('、'));return;}if(id){const w=DATA.wishes.find(x=>x.id===id);if(w){w.title=title;w.category=category;w.note=note;}}else DATA.wishes.push({id:uid('w'),title,category,note,status:'todo',doneBy:[],feeling:'',checkins:{},checkin:null,date:''});save();closeModal();renderView();}
 function editWish(id){const w=DATA.wishes.find(x=>x.id===id);if(!w)return;openModal('编辑愿望',`
   <label class="f">愿望标题<span class="req">*</span></label><input id="w_title" value="${esc(w.title||'')}">
   <label class="f">分类</label><select id="w_cat">${['旅行','美食','体验','居家','其他'].map(c=>`<option ${c===w.category?'selected':''}>${c}</option>`).join('')}</select>
-  <label class="f">攻略（怎么做）</label><textarea id="w_str">${esc(w.strategy||'')}</textarea>
-  <label class="f">攻略链接</label><input id="w_url" value="${esc(w.url||'')}">
-  <label class="f">准备事项</label><input id="w_prep" value="${esc(w.prep||'')}">
-  <label class="f">计划完成时间</label><input type="date" id="w_plan" value="${esc(w.planDate||'')}">
+  <label class="f">心愿备注（可选）</label><textarea id="w_note">${esc(w.note||'')}</textarea>
   <div class="row-btns"><button class="btn full" onclick="submitWish('${w.id}')">保存修改</button></div>`);}
 function openCheckin(w){const me=DATA.meta.me;openModal('解锁打卡',`<p>「${esc(w.title)}」完成啦！上传打卡照（可选），留下感受。</p>
   <input type="file" id="w_file" accept="image/*">
   <label class="f">完成感受</label><textarea id="w_feel" placeholder="写下这一刻"></textarea>
   <div class="row-btns"><button class="btn full" onclick="submitCheckin('${w.id}')">打卡（${whoName(me)}✓）</button></div>`);}
-function submitCheckin(id){const w=DATA.wishes.find(x=>x.id===id);if(!w)return;const me=DATA.meta.me;const f=$('#w_file')&&$('#w_file').files[0];
+function submitCheckin(id){const w=DATA.wishes.find(x=>x.id===id);if(!w)return;const me=DATA.meta.me;w.checkins=w.checkins||{};if(w.checkin&&!w.checkins[me]){w.checkins[me]=w.checkin;delete w.checkin;}const f=$('#w_file')&&$('#w_file').files[0];
   const finish=()=>{if(!w.doneBy.includes(me))w.doneBy.push(me);w.feeling=$('#w_feel').value;w.date=todayStr();save();closeModal();renderView();};
-  if(f)compress(f,800,src=>{w.checkin=src;finish();});else finish();}
+  if(f)compress(f,800,src=>{w.checkins[me]=src;finish();});else finish();}
 
 function addEmo(type){
   if(type==='sweet'){openModal('甜蜜瞬间',`    <label class="f">当时心情<span class="req">*</span></label><div class="seg" id="e_mood_seg"><button data-v="开心" class="on">😊 开心</button><button data-v="感动">😘 感动</button><button data-v="搞笑">🤣 搞笑</button><button data-v="温馨">😌 温馨</button></div><input type="hidden" id="e_mood">
