@@ -397,16 +397,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--btn1);border-style:so
 .anni-item .ad b{font-size:22px;font-weight:800;color:var(--btn1-d);line-height:1;white-space:nowrap}
 .anni-item .ad span{font-size:10px;color:var(--sub);white-space:nowrap}
 .anni-item .ab{display:flex;flex-direction:column;justify-content:center;gap:3px;flex:1;min-width:0}
-.anni-item .title-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.anni-item .title-main{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;flex:1}
-.anni-item .title-main .t{white-space:normal;word-break:break-word;min-width:0;line-height:1.35}
-.wi-checkin-wrap{position:relative;display:block}
-.wi-checkin-wrap .wi-who{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.5);color:#fff;font-size:10px;padding:1px 6px;border-radius:999px}
-.wi-checkin{margin:0;border-radius:12px}
-.anni-item .title-row .ic{width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
-.anni-item .title-row .ic img,.anni-item .title-row .ic svg{width:18px;height:18px;object-fit:contain}
+.anni-item .title-row{display:block;margin-bottom:4px}
+.anni-item .title-main{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%}
+.anni-item .title-main .ic{width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
+.anni-item .title-main .ic img,.anni-item .title-main .ic svg{width:18px;height:18px;object-fit:contain}
 .anni-item .t{flex:1 1 auto;min-width:0;margin:0;font-weight:700;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.anni-item .title-row .tag{white-space:nowrap;flex:none}
+.anni-item .title-main .t{display:block;white-space:normal;word-break:break-word;overflow:visible;text-overflow:clip;min-width:0;line-height:1.35}
+.anni-item .title-row .tag{display:inline-block;margin-top:4px;white-space:nowrap}
+.anni-item .act{flex-direction:column;gap:6px;justify-content:flex-start;padding-left:4px}
+.anni-item .act .iconbtn{width:32px;height:32px;border-radius:10px}
 
 /* 情感双入口 */
 .emo-entry{display:flex;gap:10px;margin:4px 0 14px}
@@ -1230,10 +1229,9 @@ const ev=getUpcomingEvents();
 /* ---------- module 2 纪念日 ---------- */
 function viewAnniversary(){
   const list=DATA.anniversaries.map(a=>{const nd=nextOcc(a.date);const d=diffDays(nd,todayStr());
-    const lab=d===0?`<span class="tag today">就是今天 🎉</span>`:`<span class="tag warn">还有 ${d} 天</span>`;
     const icon=annIcon(a.title);
     return `<div class="anni-item"><div class="ad">${d===0?'<b>今</b>':`<b>${d}</b><span>天</span>`}</div>
-      <div class="ab"><div class="title-row"><span class="title-main"><span class="ic">${icon}</span><span class="t">${esc(a.title)}</span></span>${lab}</div><div class="s"><span style="white-space:nowrap">下次：<b>${esc(nd)}</b></span></div>${a.note?`<div class="s" style="opacity:.75;font-size:11px">${esc(a.note)}</div>`:''}</div>
+      <div class="ab"><div class="title-row"><span class="title-main"><span class="ic">${icon}</span><span class="t">${esc(a.title)}</span></span></div><div class="s"><span style="white-space:nowrap">下次：<b>${esc(nd)}</b></span></div>${a.note?`<div class="s" style="opacity:.75;font-size:11px">${esc(a.note)}</div>`:''}</div>
       <div class="act"><button class="iconbtn" data-act="editAnn" data-id="${a.id}">${ICON.edit}</button>
       <button class="iconbtn" data-act="delAnn" data-id="${a.id}">${ICON.trash}</button></div></div>`;}).join('')||`<div class="empty">还没有纪念日，添加一个吧～</div>`;
   $("#view").innerHTML=`<div class="fade"><div class="card">${cardCorner()}<h2>${ICON.cal} 纪念日 & 倒计时 <span class="h-deco">${ICON.pawSmall}</span></h2>${list}
