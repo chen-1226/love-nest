@@ -590,9 +590,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--btn1);border-style:so
 .moment-cell{position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:var(--bg-paper);cursor:pointer}
 .moment-cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
 .moment-cell:hover img{transform:scale(1.06)}
-.moment-cell .del{position:absolute;top:5px;right:5px;width:24px;height:24px;border:none;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(58,58,58,.18);transition:transform .12s, background .15s}
-.moment-cell .del:hover{background:#fff;transform:scale(1.08)}
-.moment-cell .del svg{width:13px;height:13px}
 .moment-cell .edit{position:absolute;top:5px;left:5px;width:24px;height:24px;border:none;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(58,58,58,.18);transition:transform .12s, background .15s}
 .moment-cell .edit:hover{background:#fff;transform:scale(1.08)}
 .moment-cell .edit svg{width:13px;height:13px}
@@ -686,7 +683,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--btn1);border-style:so
 .ai-trend{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:#fff;border:1px solid var(--line)}
 .ai-trend.up{color:#4F8B7C;background:#E8F5E9;border-color:#C8E6C9}
 .ai-trend.down{color:#D96E92;background:#FCE8EC;border-color:#F5C6CB}
-.ai-trend.first{color:var(--sub);background:var(--bg-paper)}
 .ai-sparse{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FFF9F7,#FFF5F8);border:1.5px dashed var(--btn1);border-radius:var(--radius-md);padding:13px 14px;margin-bottom:14px}
 .ai-sparse b{font-size:12px;color:var(--ink)}
 .ai-sparse-s{font-size:11px;color:var(--sub);margin-top:2px}
@@ -1278,9 +1274,8 @@ function viewPhotos(){
     const upTag=p.uploader?`<span class="up-tag ${p.uploader}">${p.uploader==='cat'?'🐱 毛毛':'🐶 小赵'} 上传</span>`:'';
     const scenes=p.scene?`<span class="tag" style="background:var(--bg-paper);color:var(--ink)">${esc(p.scene)}</span>`:'';
     const places=p.place?`<span class="tag" style="background:var(--bg-paper);color:var(--ink)">📍 ${esc(p.place)}</span>`:'';
-    const cells=arr.map((src,idx)=>`<div class="moment-cell"><img src="${src}" alt="" title="${esc(p.scene||'')}" onclick="zoomImg('${src}')" style="cursor:zoom-in">
-      <div class="moment-cap">${esc(p.scene||'')}</div>
-      ${arr.length>1?`<button class="del" data-act="delPhotoImg" data-id="${p.id}" data-idx="${idx}" title="删除这张">${ICON.trash}</button>`:''}</div>`).join('');
+    const cells=arr.map((src)=>`<div class="moment-cell"><img src="${src}" alt="" title="${esc(p.scene||'')}" onclick="zoomImg('${src}')" style="cursor:zoom-in">
+      <div class="moment-cap">${esc(p.scene||'')}</div></div>`).join('');
     const headRight=(upTag||scenes||places)?`<div class="moment-tags">${upTag}${scenes}${places}</div>`:'';
     return `<div class="moment"><div class="moment-head"><div class="moment-when"><span class="md">${esc(dateStr)}</span>${timeStr?`<span class="mt">${esc(timeStr)}</span>`:''}</div>${headRight}</div><div class="moment-grid">${cells}</div>
       <div class="moment-tools"><button class="iconbtn" data-act="editPhoto" data-id="${p.id}" title="编辑">${ICON.edit}</button><button class="iconbtn" data-act="delPhoto" data-id="${p.id}" title="删除">${ICON.trash}</button></div></div>`;
@@ -1612,7 +1607,7 @@ function viewAI(){
   const prev=prevSorted.length?prevSorted[prevSorted.length-1]:null;
   let trendHtml;
   if(prev){const diff=report.score-prev.score;trendHtml=`<span class="ai-trend ${diff>=0?'up':'down'}">${diff>=0?'▲':'▼'} ${Math.abs(diff)} 分</span>`;}
-  else{trendHtml=`<span class="ai-trend first">首月月报</span>`;}
+  else{trendHtml='';}
 
   const metrics=[
     {icon:'📷',label:'合影',n:m.photos,color:'#F9B8CD'},
@@ -1705,7 +1700,18 @@ function closeModal(){$("#overlay").classList.remove('show');}
 function zoomImg(src){let o=$('#zoomOverlay');if(!o){o=document.createElement('div');o.id='zoomOverlay';o.style.cssText='position:fixed;inset:0;background:rgba(40,30,30,.92);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';o.onclick=()=>o.style.display='none';document.body.appendChild(o);}o.innerHTML='<img src="'+src+'" style="max-width:100%;max-height:100%;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.5)">';o.style.display='flex';}
 function editTodo(id){const t=DATA.todos.find(x=>x.id===id);if(!t)return;openModal('编辑待确认事项',`<label class="f">内容</label><textarea id="t_text">${esc(t.text)}</textarea><div class="row-btns"><button class="btn full" onclick="submitEditTodo('${t.id}')">保存</button></div>`);}
 function submitEditTodo(id){const t=DATA.todos.find(x=>x.id===id);if(!t)return;const v=($('#t_text').value||'').trim();if(!v){toast('内容不能为空');return;}t.text=v;save();closeModal();renderView();}
-function editEmo(id){const e=DATA.emotions.find(x=>x.id===id);if(!e)return;window._editEmoId=id;if(e.type==='sweet'){openModal('编辑甜蜜瞬间',`<label class="f">当时心情</label><div class="seg" id="e_mood_seg">${['😊 开心','😘 感动','🤣 搞笑','😌 温馨'].map(m=>`<button data-v="${m.slice(2)}" class="${e.mood===m.slice(2)?'on':''}">${m}</button>`).join('')}</div><input type="hidden" id="e_mood" value="${esc(e.mood||'')}"><label class="f">发生了什么</label><textarea id="e_c">${esc(e.content||'')}</textarea><label class="f">日期</label><input type="date" id="e_d" value="${esc(e.date||todayStr())}"><div class="row-btns"><button class="btn full" onclick="submitEditEmo()">保存</button></div>`);bindSeg('#e_mood_seg','e_mood');}else{openModal('编辑吵架记录',`<label class="f">吵架时间</label><input type="date" id="e_d" value="${esc(e.date||todayStr())}"><label class="f">触发事件简述</label><textarea id="e_trigger">${esc(e.trigger||'')}</textarea><label class="f">毛毛反应</label><div class="seg" id="e_cat">${['🤫 沉默不说话','😠 直接爆发','😌 平静沟通'].map(m=>`<button data-v="${m.slice(2)}" class="${e.catEmotion===m.slice(2)?'on':''}">${m}</button>`).join('')}</div><label class="f">小赵反应</label><div class="seg" id="e_dog">${['🏃 回避矛盾','🛡️ 直面沟通'].map(m=>`<button data-v="${m.slice(2)}" class="${e.dogEmotion===m.slice(2)?'on':''}">${m}</button>`).join('')}</div><label class="f">我的感受</label><textarea id="e_my">${esc(e.myFeeling||'')}</textarea><input type="hidden" id="e_cat_v" value="${esc(e.catEmotion||'')}"><input type="hidden" id="e_dog_v" value="${esc(e.dogEmotion||'')}"><div class="row-btns"><button class="btn full" onclick="submitEditEmo()">保存</button></div>`);bindSeg('#e_cat','e_cat_v');bindSeg('#e_dog','e_dog_v');}}
+function editEmo(id){const e=DATA.emotions.find(x=>x.id===id);if(!e)return;window._editEmoId=id;
+  if(e.type==='sweet'){
+    const opts=[['开心','😊 开心'],['感动','😘 感动'],['搞笑','🤣 搞笑'],['温馨','😌 温馨']];
+    openModal('编辑甜蜜瞬间',`<label class="f">当时心情</label><div class="seg" id="e_mood_seg">${opts.map(o=>`<button data-v="${o[0]}" class="${e.mood===o[0]?'on':''}">${o[1]}</button>`).join('')}</div><input type="hidden" id="e_mood" value="${esc(e.mood||'')}"><label class="f">发生了什么</label><textarea id="e_c">${esc(e.content||'')}</textarea><label class="f">日期</label><input type="date" id="e_d" value="${esc(e.date||todayStr())}"><div class="row-btns"><button class="btn full" onclick="submitEditEmo()">保存</button></div>`);
+    bindSeg('#e_mood_seg','e_mood');
+  }else{
+    const catOpts=[['沉默','🤫 沉默不说话'],['爆发','😠 直接爆发'],['平静','😌 平静沟通']];
+    const dogOpts=[['回避','🏃 回避矛盾'],['直面','🛡️ 直面沟通']];
+    openModal('编辑吵架记录',`<label class="f">吵架时间</label><input type="date" id="e_d" value="${esc(e.date||todayStr())}"><label class="f">触发事件简述</label><textarea id="e_trigger">${esc(e.trigger||'')}</textarea><label class="f">毛毛反应</label><div class="seg" id="e_cat">${catOpts.map(o=>`<button data-v="${o[0]}" class="${e.catEmotion===o[0]?'on':''}">${o[1]}</button>`).join('')}</div><label class="f">小赵反应</label><div class="seg" id="e_dog">${dogOpts.map(o=>`<button data-v="${o[0]}" class="${e.dogEmotion===o[0]?'on':''}">${o[1]}</button>`).join('')}</div><label class="f">我的感受</label><textarea id="e_my">${esc(e.myFeeling||'')}</textarea><input type="hidden" id="e_cat_v" value="${esc(e.catEmotion||'')}"><input type="hidden" id="e_dog_v" value="${esc(e.dogEmotion||'')}"><div class="row-btns"><button class="btn full" onclick="submitEditEmo()">保存</button></div>`);
+    bindSeg('#e_cat','e_cat_v');bindSeg('#e_dog','e_dog_v');
+  }
+}
 function submitEditEmo(){const id=window._editEmoId;const e=DATA.emotions.find(x=>x.id===id);if(!e)return;const miss=[];if(e.type==='sweet'){const mood=($('#e_mood')&&$('#e_mood').value)||'';const content=($('#e_c').value||'').trim();const date=$('#e_d').value||'';if(!mood)miss.push('当时心情');if(!content)miss.push('发生了什么');if(!date)miss.push('日期');if(miss.length){toast('请填写：'+miss.join('、'));return;}e.mood=mood;e.content=content;e.date=date;}else{const date=$('#e_d').value||'';const trigger=($('#e_trigger').value||'').trim();const catEmotion=($('#e_cat_v')&&$('#e_cat_v').value)||'';const dogEmotion=($('#e_dog_v')&&$('#e_dog_v').value)||'';const myFeeling=($('#e_my').value||'').trim();if(!date)miss.push('吵架时间');if(!trigger)miss.push('触发事件简述');if(!catEmotion)miss.push('毛毛反应');if(!dogEmotion)miss.push('小赵反应');if(!myFeeling)miss.push('我的感受');if(miss.length){toast('请填写：'+miss.join('、'));return;}e.date=date;e.trigger=trigger;e.catEmotion=catEmotion;e.dogEmotion=dogEmotion;e.myFeeling=myFeeling;}save();closeModal();window._editEmoId=null;renderView();}
 
 
@@ -1722,7 +1728,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
     case 'favDailyQuote':{const q=DAILY_QUOTES[dayIdx()%DAILY_QUOTES.length];if(!DATA.favQuotes.includes(q.zh)){DATA.favQuotes.push(q.zh);save();toast('已收藏 🤍');}else toast('已在收藏里啦');break;}
     case 'addAnn':addAnn();break;case 'editAnn':editAnn(id);break;case 'delAnn':del('anniversaries',id,'纪念日');break;
     case 'addGift':addGift();break;case 'editGift':editGift(id);break;case 'delGift':del('gifts',id,'礼物');break;
-    case 'addPhoto':$('#photoFile').click();break;case 'delPhoto':del('photos',id,'合影');break;case 'editPhoto':editPhoto(id);break;case 'delPhotoImg':{const p=DATA.photos.find(x=>x.id===id);if(p){let arr=pImgs(p);const i=+el.dataset.idx;arr.splice(i,1);if(!arr.length){if(confirm('这是最后一张，删除后将整条合影记录一并删除，确定吗？')){DATA.photos=DATA.photos.filter(x=>x.id!==id);}}else{p.imgs=arr;p.src=arr[0];}save();renderView();}break;}
+    case 'addPhoto':$('#photoFile').click();break;case 'delPhoto':del('photos',id,'合影');break;case 'editPhoto':editPhoto(id);break;
     case 'addWish':addWish();break;case 'editWish':editWish(id);break;
     case 'toggleWish':{const w=DATA.wishes.find(x=>x.id===id);if(w)openCheckin(w);break;}
     case 'delWish':del('wishes',id,'许愿');break;
